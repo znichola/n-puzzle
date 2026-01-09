@@ -4,6 +4,8 @@ from typing import Optional
 
 import utils as u
 
+C = 1
+
 class state:
     def __init__(self, id, grid):
         self.id = id
@@ -13,9 +15,6 @@ class state:
 
     def g(self):
         return self.cost
-    
-    def set_g(self, g):
-        self.cost = g
 
 
 class board:
@@ -47,6 +46,7 @@ class board:
         exit(1)
         while len(opened) != 0 and self.succes is False:
             e_id = self.heuristic(opened)
+            e_state = self.findOrCreateState(e_id)
             if self.states[e_id].grid == self.target:
                 succes = True
             else:
@@ -56,10 +56,9 @@ class board:
                     if (not s_id in opened) and (not s_id in closed):
                         s_state = self.findOrCreateState(s_id)
                         s_state.predecessor = e_id
-                        s_state.set_g(1)
+                        s_state.cost = e_state.cost + C
                     else:
-                        e_state = self.findOrCreateState(e)
-                        if s_state.g() + self.heuristic(s) > 1:
+                        if s_state.g() + self.heuristic(s_id) > e_state.g() + C + self.heuristic(s_id):
                             s_state = self.findOrCreateState(s_id)
                             s_state.predecessor = e_id
                             s_state.cost = 0
