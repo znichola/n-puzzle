@@ -1,6 +1,14 @@
 # n-puzzle
 
 
+## TODO
+
+- [ ] stats prints (size of states, opened stated, closes states)
+- [ ] return print the subject  demands
+- [ ] test system? file in result out
+- [ ] resolve the extremly long solve time for an unsolvable
+- [ ] differente heurisitc (manhattan, custom)
+
 ## Pseudo-implementation of A*
 
 ```
@@ -14,7 +22,7 @@ bool success  <- false
 While (opened != empty) and ( not success) do
     state e <- select_according_to_Astar_strategy_in ( opened )
     If is_final ( e ) // Compares 'e' to a solustion state
-        Then success < true
+        Then success <- true
         Else opened <- opened - e
              closed <- closed + e
              ForEach state s in expand(e) do

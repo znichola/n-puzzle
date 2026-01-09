@@ -47,8 +47,8 @@ def argParser(arg):
     try:
         args = arg.split()
         size = int(args[5])
-        if args[4] == "unsolvable":
-            raise Exception("This puzzle is unsolvable")
+        # if args[4] == "unsolvable":
+        #     raise Exception("This puzzle is unsolvable")
         if math.pow(size, 2) == len(range(6, len(args))):
             grid = [int(n) for n in args[6:]]
         else:

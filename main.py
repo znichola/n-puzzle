@@ -22,14 +22,34 @@ class board:
     def __init__(self, size, grid) -> None:
         self.target = u.getResult(size)
         self.size = size
-
         self.current_id = 0
+        self.isSolvable = not self.isNotSolvable(grid)
         self.states = [] # each state has an id, which is the index in this list
         self.createState(grid)
 
-
     def __repr__(self) -> str:
         return f'Num of state: {self.current_id - 1}\nTarget {self.target}'
+
+
+    def isNotSolvable(self, grid):
+        parity = 0
+        gridWidth = self.size
+        row = 0
+        blankRow = 0
+
+        for i in range(len(grid)):
+            if i % gridWidth == 0:
+                row += 1
+            if grid[i] == 0:
+                blankRow = row
+                continue
+            for j in range(i+1, len(grid)):
+                if grid[i] > grid[j] and grid[j] != 0:
+                    parity += 1
+
+        if gridWidth % 2 == 0 and blankRow % 2 != 0:
+                return parity % 2 != 0
+        return parity % 2 == 0
 
 
     def heuristic(self, s_id: int):
@@ -123,9 +143,6 @@ class board:
 
 
 
-
-
-
 ## TODO how is the program supposed to be used, with a pipe or passing a file with the grid to use
 ## TODO     self.isSolved()
 ##          do we make a seperate state/grid/board class, with the grid, it's predeccssor and the cumulated cost
@@ -140,8 +157,11 @@ def main():
         grid = [4, 1, 8, 7, 0, 3, 2, 5, 6]
 
     b = board(size, grid)
-
-    b.algo(0)
+    
+    if b.isSolvable:
+        b.algo(0)
+    else:
+        print("Is Unsolvable")
 
 
 
