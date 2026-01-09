@@ -26,6 +26,8 @@ class board:
         self.isSolvable = not self.isNotSolvable(grid)
         self.states = [] # each state has an id, which is the index in this list
         self.createState(grid)
+        self.totoalStatesOpened = 0
+
 
     def __repr__(self) -> str:
         return f'Num of state: {self.current_id - 1}\nTarget {self.target}'
@@ -72,6 +74,7 @@ class board:
 
     def algo(self, start_state):
         opened = set(self.expand(start_state))
+        self.totoalStatesOpened = len(opened)
         closed = set()
         succes = False
         # print(opened)
@@ -88,7 +91,7 @@ class board:
                 for s_id in ee:
                     s_state = self.states[s_id]
                     if (not s_id in opened) and (not s_id in closed):
-                        opened.add(s_id)
+                        opened.add(s_id);  self.totoalStatesOpened += 1
                         s_state.predecessor = e_id
                         s_state.cost = e_state.cost + C
                     else:
@@ -97,7 +100,8 @@ class board:
                             s_state.cost = e_state.cost + C
                             if s_id in closed:
                                 closed.remove(s_id)
-                                opened.add(s_id)
+                                opened.add(s_id); self.totoalStatesOpened += 1
+
 
         if succes is True:
             print("Succeed")
@@ -160,8 +164,10 @@ def main():
     
     if b.isSolvable:
         b.algo(0)
+        print()
     else:
-        print("Is Unsolvable")
+        print("This Puzzle is unsolvable.")
+        exit(1)
 
 
 
