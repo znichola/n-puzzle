@@ -1,17 +1,16 @@
 import math
 
-def printGrid(grid):
+def gridToString(grid):
     size = int(math.sqrt(len(grid)))
-    def showGrid(g):
-        lines = []
-        max_width = len(str(max(g)))
-        for i in range(0, len(g), size):
-            row = g[i:i + size]
-            lines.append(" ".join(f"{num:>{max_width}}" for num in row))
-        return lines
-    grid = showGrid(grid)
-    print("Size", size)
-    print("Grid\n", "\n".join(grid), sep='')
+    lines = []
+    max_width = len(str(max(grid)))
+    for i in range(0, len(grid), size):
+        row = grid[i:i + size]
+        lines.append(" ".join(f"{num:>{max_width}}" for num in row))
+    return "\n".join(lines)
+
+def printGrid(grid):
+    print("Grid\n", gridToString(grid), sep='')
 
 
 def getResult(size):

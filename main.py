@@ -12,7 +12,8 @@ class state:
         self.predecessor: Optional[int] = None
         self.cost = 0
         self.grid = grid
-
+    def __repr__(self) -> str:
+        return u.gridToString(self.grid)
     def g(self):
         return self.cost
 
@@ -25,54 +26,55 @@ class board:
         self.current_id = 0
         self.states = [] # each state has an id, which is the index in this list
         self.createState(grid)
-        self.algo(0)
 
 
     def __repr__(self) -> str:
         return f'Num of state: {self.current_id - 1}\nTarget {self.target}'
 
 
-    def heuristic(self, selection: list[int]):
-        if len(selection) == 0: raise Exception("Passed empty list to heuristic!")
-        
+    def heuristic(self, s_id: int):
         def euclideanDistance(a_idx: int, b_idx: int):
             ax, ay = a_idx // self.size, a_idx % self.size
             bx, by = b_idx // self.size, b_idx % self.size
+            # return abs((ax - bx) + (ay - by))
             return math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
 
         def wrongSquares(grid: list[int]):
-            return [ (i, grid.index(t)) for i, (t, g) in enumerate(zip(self.target, grid)) if t != g ]
+            return [(i, grid.index(t)) for i, (t, g) in enumerate(zip(self.target, grid)) if t != g ]
+        
+        return sum(list(euclideanDistance(a, b) for a, b in wrongSquares(self.states[s_id].grid)))
 
-        print(wrongSquares(selection[0]))
 
-        return selection[0]
+    def select_by_heuristic(self, possible_states: set[int]):
+        s_id_with_cost = [(s_id, self.heuristic(s_id)) for s_id in possible_states]
+        return min(s_id_with_cost, key=lambda t: t[1])[0]
 
 
     def algo(self, start_state):
         opened = set(self.expand(start_state))
         closed = set()
         succes = False
-        print(opened)
-        [u.printGrid(s.grid) for s in self.states]
+        # print(opened)
+        # [u.printGrid(s.grid) for s in self.states]
         while len(opened) != 0 and succes is False:
-            e_id = self.heuristic(opened)
-            exit(1)
-            e_state = self.findOrCreateState(e_id)
-            if self.states[e_id].grid == self.target:
+            e_id = self.select_by_heuristic(opened)
+            e_state = self.states[e_id]
+            if e_state.grid == self.target:
                 succes = True
             else:
                 opened.remove(e_id)
                 closed.add(e_id)
-                for s_id in self.expand(e_id):
+                ee = self.expand(e_id)
+                for s_id in ee:
+                    s_state = self.states[s_id]
                     if (not s_id in opened) and (not s_id in closed):
-                        s_state = self.findOrCreateState(s_id)
+                        opened.add(s_id)
                         s_state.predecessor = e_id
                         s_state.cost = e_state.cost + C
                     else:
                         if s_state.g() + self.heuristic(s_id) > e_state.g() + C + self.heuristic(s_id):
-                            s_state = self.findOrCreateState(s_id)
                             s_state.predecessor = e_id
-                            s_state.cost = 0
+                            s_state.cost = e_state.cost + C
                             if s_id in closed:
                                 closed.remove(s_id)
                                 opened.add(s_id)
@@ -88,7 +90,7 @@ class board:
         self.current_id += 1
 
 
-    def findOrCreateState(self, grid) -> state | None:
+    def findOrCreateState(self, grid) -> state:
         res = list(filter(lambda s: s.grid == grid, self.states))
         if len(res) == 0:
             self.createState(grid)
@@ -97,7 +99,7 @@ class board:
         return res[0]
 
 
-    def expand(self, state_id):
+    def expand(self, state_id) -> list[int]:
         '''returns a list of ids'''
         def getNeighbouringStates(state_id):
             def getNeighbours(index):
@@ -138,9 +140,9 @@ def main():
         grid = [4, 1, 8, 7, 0, 3, 2, 5, 6]
 
     b = board(size, grid)
-    print(u.printGrid(grid))
 
-    b.printFullState()
+    b.algo(0)
+
 
 
 if __name__ == "__main__":
