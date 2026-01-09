@@ -11,7 +11,7 @@ def printGrid(grid):
         return lines
     grid = showGrid(grid)
     print("Size", size)
-    print("Grid\n", "\n".join(grid))
+    print("Grid\n", "\n".join(grid), sep='')
 
 
 def getResult(size):
