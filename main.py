@@ -33,6 +33,10 @@ class board:
             ))
 
 
+    def getNeighbours(self, index):
+        return
+
+
     def getResult(self):
         res = [[0 for _ in range(self.size)] for _ in range(self.size)]
         values = list(range(1, int(math.pow(self.size, 2))))
@@ -65,21 +69,36 @@ class board:
         return [x for xs in res for x in xs]
 
 
-    def move(self, dir):
-        return
+    def move1(self, void, target):
+        #INDEX
+        self.board[void], self.board[target] = self.board[target], self.board[void]
+
+    def move2(self, void_idx, target_idx):
+        #VALUES
+        void = self.board.index(void_idx)
+        target = self.board.index(target_idx)
+        self.board[void], self.board[target] = self.board[target], self.board[void]
 
 
-def argParser(args):
-    print(args)
-    
-    return 3, [1, 4, 8, 7, 0, 3, 2, 5, 6]
+def argParser(arg):
+    try:
+        args = arg.split()
+        size = int(args[5])
+        if math.pow(size, 2) == len(range(6, len(args))):
+            grid = [int(n) for n in args[6:]]
+        else:
+          raise Exception()  
+        return size, grid
+    except Exception as error:
+        print(error)
+        exit(1)
 
 
 def main():
     #python npuzzle-gen.py n | python main.py
     if not sys.stdin.isatty():
-        args = sys.stdin.read()
-        size, grid = argParser(args)
+        arg = sys.stdin.read()
+        size, grid = argParser(arg)
     else:
         size = 3
         grid = [4, 1, 8, 7, 0, 3, 2, 5, 6]
