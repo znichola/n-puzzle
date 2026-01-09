@@ -1,11 +1,6 @@
 import math
 import sys
 
-
-# some parsing
-
-
-
 class board:
 
     def __init__(self, size, grid) -> None:
@@ -34,8 +29,11 @@ class board:
 
 
     def getNeighbours(self, index):
-        return
-
+        return list(filter(
+            lambda v: v >= 0 and v < len(self.board) and 
+            (int(v / self.size) == int(index / self.size) or int(v % self.size) == int(index % self.size)),
+            [index-self.size, index+1, index+self.size, index-1]
+            ))
 
     def getResult(self):
         res = [[0 for _ in range(self.size)] for _ in range(self.size)]
@@ -84,6 +82,8 @@ def argParser(arg):
     try:
         args = arg.split()
         size = int(args[5])
+        if args[4] == "unsolvable":
+            raise Exception("This puzzle is unsolvable")
         if math.pow(size, 2) == len(range(6, len(args))):
             grid = [int(n) for n in args[6:]]
         else:
@@ -105,7 +105,9 @@ def main():
 
     b = board(size, grid)
     print(b)
-    print("for index 0, the neighbours are :", b.getNeighours(0))
+    print("for index 0, the neighbours are :", b.getNeighbours(0))
+    print("for index 4, the neighbours are :", b.getNeighbours(4))
+    print("for index 5, the neighbours are :", b.getNeighbours(5))
 
 
 if __name__ == "__main__":
