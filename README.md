@@ -3,11 +3,12 @@
 
 ## TODO
 
-- [ ] stats prints (size of states, opened stated, closes states)
-- [ ] return print the subject  demands
+- [x] stats prints (size of states, opened stated, closes states)
+- [x] return print the subject  demands
 - [ ] test system? file in result out
 - [ ] resolve the extremly long solve time for an unsolvable
 - [ ] differente heurisitc (manhattan, custom)
+- [ ] Solvable/Unsolvable for 4x4
 
 ## Pseudo-implementation of A*
 

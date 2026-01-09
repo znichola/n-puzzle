@@ -9,6 +9,7 @@ def gridToString(grid):
         lines.append(" ".join(f"{num:>{max_width}}" for num in row))
     return "\n".join(lines)
 
+
 def printGrid(grid):
     print("Grid\n", gridToString(grid), sep='')
 
@@ -42,6 +43,13 @@ def getResult(size):
             pos[1] += 1
             up = False
     return [x for xs in res for x in xs]
+
+
+def print_tab_to_file(tab, filename: str = "solution.txt"):
+    with open(filename, "w", encoding="utf-8") as f:
+        for row in tab:
+            f.write(str(row) + "\n")
+
 
 def argParser(arg):
     try:

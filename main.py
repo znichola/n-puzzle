@@ -27,6 +27,8 @@ class board:
         self.states = [] # each state has an id, which is the index in this list
         self.createState(grid)
         self.totoalStatesOpened = 0
+        self.solutionSequence = 0
+
 
 
     def __repr__(self) -> str:
@@ -58,7 +60,6 @@ class board:
         def euclideanDistance(a_idx: int, b_idx: int):
             ax, ay = a_idx // self.size, a_idx % self.size
             bx, by = b_idx // self.size, b_idx % self.size
-            # return abs((ax - bx) + (ay - by))
             return math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
 
         def wrongSquares(grid: list[int]):
@@ -72,17 +73,30 @@ class board:
         return min(s_id_with_cost, key=lambda t: t[1])[0]
 
 
+    def SolutionSequence(self):
+        tab = []
+        idx = self.last_state_id
+        while True:
+            tab.append(self.states[idx].grid)
+            if idx == 0:
+                break
+            idx = self.states[idx].predecessor
+        tab.reverse()
+        u.print_tab_to_file(tab)
+        return len(tab)
+
+
     def algo(self, start_state):
-        opened = set(self.expand(start_state))
+        # opened = set(self.expand(start_state))
+        opened = set([0]) #because first expand has no parent for solution sequence
         self.totoalStatesOpened = len(opened)
         closed = set()
         succes = False
-        # print(opened)
-        # [u.printGrid(s.grid) for s in self.states]
         while len(opened) != 0 and succes is False:
             e_id = self.select_by_heuristic(opened)
             e_state = self.states[e_id]
             if e_state.grid == self.target:
+                self.last_state_id = e_id
                 succes = True
             else:
                 opened.remove(e_id)
@@ -101,12 +115,6 @@ class board:
                             if s_id in closed:
                                 closed.remove(s_id)
                                 opened.add(s_id); self.totoalStatesOpened += 1
-
-
-        if succes is True:
-            print("Succeed")
-        else:
-            print("Unsolvable")
 
 
     def createState(self, grid):
@@ -146,7 +154,6 @@ class board:
 
 
 
-
 ## TODO how is the program supposed to be used, with a pipe or passing a file with the grid to use
 ## TODO     self.isSolved()
 ##          do we make a seperate state/grid/board class, with the grid, it's predeccssor and the cumulated cost
@@ -164,7 +171,10 @@ def main():
     
     if b.isSolvable:
         b.algo(0)
-        print()
+        print("Total number of states ever selected in the opened set : ", b.totoalStatesOpened)
+        print("Maximum number of states ever represented in memory at the same time during the search : ", len(b.states))
+        print("Number of moves required to transition from the initial state to the final state : ", b.SolutionSequence())
+        print("The ordered sequence of states that make up the solution : solution.txt")
     else:
         print("This Puzzle is unsolvable.")
         exit(1)
