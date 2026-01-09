@@ -32,8 +32,19 @@ class board:
         return f'Num of state: {self.current_id - 1}\nTarget {self.target}'
 
 
-    def heuristic(self, selection):
+    def heuristic(self, selection: list[int]):
         if len(selection) == 0: raise Exception("Passed empty list to heuristic!")
+        
+        def euclideanDistance(a_idx: int, b_idx: int):
+            ax, ay = a_idx // self.size, a_idx % self.size
+            bx, by = b_idx // self.size, b_idx % self.size
+            return math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
+
+        def wrongSquares(grid: list[int]):
+            return [ (i, grid.index(t)) for i, (t, g) in enumerate(zip(self.target, grid)) if t != g ]
+
+        print(wrongSquares(selection[0]))
+
         return selection[0]
 
 
@@ -43,9 +54,9 @@ class board:
         succes = False
         print(opened)
         [u.printGrid(s.grid) for s in self.states]
-        exit(1)
-        while len(opened) != 0 and self.succes is False:
+        while len(opened) != 0 and succes is False:
             e_id = self.heuristic(opened)
+            exit(1)
             e_state = self.findOrCreateState(e_id)
             if self.states[e_id].grid == self.target:
                 succes = True
