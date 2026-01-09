@@ -6,8 +6,7 @@ fetch() {
 
 venv() {
     uv sync
-    echo "ℹ️ To activate the venv run : source .venv/bin/activate"
-    echo "ℹ️ To activate the venv run : .\.venv\Scripts\activate"
+    echo "To activate the venv run : source .venv/bin/activate"
 }
 
 usage() {

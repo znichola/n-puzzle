@@ -2,38 +2,41 @@ import math
 import sys
 
 class board:
-
     def __init__(self, size, grid) -> None:
-        self.board = grid
+        self.grid = grid
         self.size = size
-        self.result = self.getResult()
+        self.target = self.getResult()
 
 
     def __repr__(self) -> str:
-        lines = [str(self.size)]
-        lines.append("board")
-        for i in range(0, len(self.board), self.size):
-            lines.append(" ".join(map(str, self.board[i:i+self.size])))
-        lines.append("\ntarget")
-        for i in range(0, len(self.result), self.size):
-            lines.append(" ".join(map(str, self.result[i:i+self.size])))
-
-        return "\n".join(lines) + "\n"
+        return f'Size: {self.size}\nGrid   {self.grid}\nTarget {self.target}'
 
 
-    def getNeighours(self, index) -> list[int]:
-        return list(filter(
-            lambda v: v >= 0 and v < len(self.board),
-            [index-self.size, index+1, index+self.size, index-1]
-            ))
+
+
+    def printFullState(self):
+        def showGrid(g):
+            lines = []
+            max_width = len(str(max(g)))
+            for i in range(0, len(g), self.size):
+                row = g[i:i + self.size]
+                lines.append(" ".join(f"{num:>{max_width}}" for num in row))
+            return lines
+        grid = showGrid(self.grid)
+        target = showGrid(self.target)
+        res = "\n".join( f'{g}  |  {t}' for g, t in zip(grid, target))
+        print("Size:", self.size)
+        print("Grid", ' ' * len(grid[0]), "Target", sep='')
+        print(res)
 
 
     def getNeighbours(self, index):
         return list(filter(
-            lambda v: v >= 0 and v < len(self.board) and 
+            lambda v: v >= 0 and v < len(self.grid) and 
             (int(v / self.size) == int(index / self.size) or int(v % self.size) == int(index % self.size)),
             [index-self.size, index+1, index+self.size, index-1]
             ))
+
 
     def getResult(self):
         res = [[0 for _ in range(self.size)] for _ in range(self.size)]
@@ -63,19 +66,16 @@ class board:
             else:
                 pos[1] += 1
                 up = False
-        
         return [x for xs in res for x in xs]
 
 
-    def move1(self, void, target):
-        #INDEX
-        self.board[void], self.board[target] = self.board[target], self.board[void]
+    def moveByIndex(self, void, target):
+        self.grid[void], self.grid[target] = self.grid[target], self.grid[void]
 
-    def move2(self, void_idx, target_idx):
-        #VALUES
-        void = self.board.index(void_idx)
-        target = self.board.index(target_idx)
-        self.board[void], self.board[target] = self.board[target], self.board[void]
+    def moveByValue(self, void_idx, target_idx):
+        void = self.grid.index(void_idx)
+        target = self.grid.index(target_idx)
+        self.grid[void], self.grid[target] = self.grid[target], self.grid[void]
 
 
 def argParser(arg):
@@ -87,12 +87,14 @@ def argParser(arg):
         if math.pow(size, 2) == len(range(6, len(args))):
             grid = [int(n) for n in args[6:]]
         else:
-          raise Exception()  
+          raise Exception()
         return size, grid
     except Exception as error:
         print(error)
         exit(1)
 
+
+## TODO how is the program supposed to be used, with a pipe or passing a file with the grid to use
 
 def main():
     #python npuzzle-gen.py n | python main.py
@@ -108,6 +110,8 @@ def main():
     print("for index 0, the neighbours are :", b.getNeighbours(0))
     print("for index 4, the neighbours are :", b.getNeighbours(4))
     print("for index 5, the neighbours are :", b.getNeighbours(5))
+
+    b.printFullState()
 
 
 if __name__ == "__main__":
