@@ -68,3 +68,4 @@ If succes Then ... Else ... EndIf
 - [A Star - Computerphile](https://www.youtube.com/watch?v=ySN5Wnu88nE)
 - [Solvable function Logic](https://www.youtube.com/watch?v=bhmCmbj9VAg)
 - [heapq - Python](https://docs.python.org/3/library/heapq.html)
+- [triangle - number](https://oeis.org/A046092)

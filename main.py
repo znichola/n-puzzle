@@ -68,13 +68,30 @@ class board:
 
         def tilesOutOfPlace(grid: list[int]):
             return [(i, grid.index(t)) for i, (t, g) in enumerate(zip(self.target, grid)) if t != g ]
+        
+        def getNeighbours(index):
+            return list(filter(
+                lambda v: v >= 0 and v < pow(self.size, 2) and 
+                (int(v / self.size) == int(index / self.size) or int(v % self.size) == int(index % self.size)),
+                [index-self.size, index+1, index+self.size, index-1]
+                ))
 
+        def smarts(grid: list[int]):
+            total = 0
+            for i, value in enumerate(grid):
+                for n_index in getNeighbours(i):
+                    if n_index > i and (grid[n_index] == value + 1 or grid[n_index] == value - 1):
+                        total += 1
+            max_connections = 2*(self.size-1)*self.size # see A046092 from oeis
+            dist = sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
+            return dist * (total / max_connections)
+        
         if self.h == "Euclidean":
-            test = sum(list(euclideanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
-            return test
+            return sum(list(euclideanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
         elif self.h == "Manhattan":
-            test = sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
-            return test
+            return sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
+        elif self.h == "Smart":
+            return smarts(grid)
         return 42
 
     def select_by_heuristic(self, possible_states: set[str]):
@@ -101,33 +118,38 @@ class board:
 
     def algo(self, grid):
         opened =[(0, str(grid))]
+        opened_set = set([str(grid)])
         self.totoalStatesOpened = 1
         closed = set()
 
         succes = False
         while len(opened) != 0 and succes is False:
-            _, e_hash = heapq.heappop(opened) # Select state by minimum heuristic
+            h, e_hash = heapq.heappop(opened) # Select state by minimum heuristic
+            # print(h, e_hash)
+            # print()
             e_state = self.states[e_hash]
             if e_state.grid == self.target:
                 self.last_state_id = e_state.id ###
                 succes = True
             else:
-                # opened.remove((h, e_hash))
+                opened_set.remove(e_hash)
                 closed.add(e_hash)
                 ee_hash = self.expand(e_hash)
                 for s_hash in ee_hash:
                     s_state = self.states[s_hash]
-                    if (not s_hash in opened) and (not s_hash in closed):
+                    if (not s_hash in opened_set) and (not s_hash in closed):
                         heapq.heappush(opened, (s_state.h, s_hash));  self.totoalStatesOpened += 1
+                        opened_set.add(s_hash)
                         s_state.predecessor = e_hash
                         s_state.cost = e_state.cost + C
                     else:
-                        if s_state.g() + s_state.h > e_state.g() + C + s_state.h:
+                        if s_state.cost + s_state.h > e_state.cost + C + s_state.h:
                             s_state.predecessor = e_hash
                             s_state.cost = e_state.cost + C
                             if s_hash in closed:
                                 closed.remove(s_hash)
                                 heapq.heappush(opened, (s_state.h, s_hash)); self.totoalStatesOpened += 1
+                                opened_set.add(s_hash)
 
 
     def createState(self, grid):
@@ -188,7 +210,7 @@ def main():
     
     if b.isSolvable:
         b.algo(grid)
-        # print(f"h = {b.h}")
+        print(f"h = {b.h}")
         print("Total number of states ever selected in the opened set : ", b.totoalStatesOpened)
         print("Maximum number of states ever represented in memory at the same time during the search : ", len(b.states))
         # print("Number of moves required to transition from the initial state to the final state : ", b.SolutionSequence())
