@@ -4,3 +4,4 @@ __pycache__
 .venv
 npuzzle-gen.py
 solution.txt
+profile.prof
