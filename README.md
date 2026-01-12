@@ -1,5 +1,13 @@
 # n-puzzle
 
+## Profiling
+```
+# Generate the profiling data
+python npuzzle-gen.py -s 5 | python -m cProfile -o profile.prof main.py
+
+# View the flamegraph
+snakeviz profile.prof
+```
 
 ## TODO
 
@@ -59,3 +67,4 @@ If succes Then ... Else ... EndIf
 
 - [A Star - Computerphile](https://www.youtube.com/watch?v=ySN5Wnu88nE)
 - [Solvable function Logic](https://www.youtube.com/watch?v=bhmCmbj9VAg)
+- [heapq - Python](https://docs.python.org/3/library/heapq.html)

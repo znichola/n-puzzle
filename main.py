@@ -100,28 +100,25 @@ class board:
 
 
     def algo(self, grid):
-        opened = {(0, str(grid))}
-        #opened = set((0, str(grid)))
-        opened_2 = heapq.heapify([str(grid)])
-        self.totoalStatesOpened = len(opened)
+        opened =[(0, str(grid))]
+        self.totoalStatesOpened = 1
         closed = set()
-        
+
         succes = False
         while len(opened) != 0 and succes is False:
-            h, e_hash = min(opened)
-            #e_hash = self.select_by_heuristic(opened)
+            _, e_hash = heapq.heappop(opened) # Select state by minimum heuristic
             e_state = self.states[e_hash]
             if e_state.grid == self.target:
                 self.last_state_id = e_state.id ###
                 succes = True
             else:
-                opened.remove((h, e_hash))
+                # opened.remove((h, e_hash))
                 closed.add(e_hash)
                 ee_hash = self.expand(e_hash)
                 for s_hash in ee_hash:
                     s_state = self.states[s_hash]
                     if (not s_hash in opened) and (not s_hash in closed):
-                        opened.add((s_state.h, s_hash));  self.totoalStatesOpened += 1
+                        heapq.heappush(opened, (s_state.h, s_hash));  self.totoalStatesOpened += 1
                         s_state.predecessor = e_hash
                         s_state.cost = e_state.cost + C
                     else:
@@ -130,7 +127,7 @@ class board:
                             s_state.cost = e_state.cost + C
                             if s_hash in closed:
                                 closed.remove(s_hash)
-                                opened.add((s_state.h, s_hash)); self.totoalStatesOpened += 1
+                                heapq.heappush(opened, (s_state.h, s_hash)); self.totoalStatesOpened += 1
 
 
     def createState(self, grid):
