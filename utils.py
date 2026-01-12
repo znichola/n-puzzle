@@ -72,7 +72,7 @@ def setUpArgs():
         "--heuristic",
         type=str,
         default="Euclidean",
-        choices=["Euclidean", "Manhattan", "Chebyshev", "Parity"]
+        choices=["Euclidean", "Manhattan", "Chebyshev", "Parity", "test"]
     )
     parser.add_argument(
         "puzzle_path",
