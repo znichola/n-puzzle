@@ -52,18 +52,28 @@ def print_tab_to_file(tab, filename: str = "solution.txt"):
             f.write(f"{i}\n{gridToString(row)}\n\n")
 
 
-def puzzleParser(arg):
-    try:
-        args = arg.split()
-        size = int(args[5])
-        if math.pow(size, 2) == len(range(6, len(args))):
-            grid = [int(n) for n in args[6:]]
+def puzzleParser(input: str):
+    print(input)
+    lines = input.split('\n')
+    size = None
+    grid = []
+    for line in lines:
+        l = line.split("#")[0]
+        if len(l) == 0:
+            continue
+        if size == None:
+            size = int(l)
         else:
-          raise Exception()
-        return size, grid
-    except Exception as error:
-        print(error)
-        exit(1)
+            nums = l.split()
+            [grid.append(int(n)) for n in nums]
+    if size and math.pow(size, 2) != len(grid):
+        raise Exception("Bad input puzzle dimentions")
+    g2 = grid.copy()
+    g2.sort()
+    if len([1 for a, e in zip(g2, list(range(0, len(grid)))) if a != e]) != 0:
+        print(f"{grid=} {g2=}")
+        raise Exception("Input must be only consecutive numbers")
+    return size, grid
 
 
 def setUpArgs():
@@ -72,7 +82,7 @@ def setUpArgs():
         "--heuristic",
         type=str,
         default="Euclidean",
-        choices=["Euclidean", "Manhattan", "Chebyshev", "Parity", "Smart"]
+        choices=["Euclidean", "Manhattan", "Smart", "Linear"]
     )
     parser.add_argument(
         "puzzle_path",

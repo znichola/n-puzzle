@@ -85,6 +85,47 @@ class board:
             max_connections = 2*(self.size-1)*self.size # see A046092 from oeis
             dist = sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
             return dist * (total / max_connections)
+    
+
+        def linear2(grid: list[int]):
+            total = 0
+            for row in range(0, len(grid), self.size):
+                row_grid = grid[row:row + self.size]
+                row_target = self.target[row:row + self.size]
+                for c in list(set(row_grid) & set(row_target)):
+                    if row_grid.index(c) > row_target.index(c):
+                        total += 1 
+            
+            for col in range(self.size):
+                col_grid = grid[col :: self.size]
+                col_target = self.target[col :: self.size]
+                for c in list(set(col_grid) & set(col_target)):
+                    if col_grid.index(c) > col_target.index(c):
+                        total += 1  
+
+            # if total != 0:
+            #     print(f"{total=}")
+            return total
+        
+
+        def linear(grid: list[int]):
+            total = 0
+            goal_pos = {v: i for i, v in enumerate(self.target)}
+
+            for row in range(self.size):
+                start = row * self.size
+                end = start + self.size
+
+                row_tiles = grid[start:end]
+
+                tiles = [tile for tile in row_tiles if tile != 0 and goal_pos[tile] // self.size == row]
+
+                for i in range(len(tiles)):
+                    for j in range(i + 1, len(tiles)):
+                        if goal_pos[tiles[i]] > goal_pos[tiles[j]]:
+                            total += 1
+            return total
+
         
         if self.h == "Euclidean":
             return sum(list(euclideanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
@@ -92,6 +133,8 @@ class board:
             return sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
         elif self.h == "Smart":
             return smarts(grid)
+        elif self.h == "Linear":
+            return sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid))) + 2 * linear(grid)
         return 42
 
     def select_by_heuristic(self, possible_states: set[str]):
@@ -103,17 +146,17 @@ class board:
         )
 
 
-    # def SolutionSequence(self):
-    #     tab = []
-    #     idx = self.last_state_id
-    #     while True:
-    #         tab.append(self.states[idx].grid)
-    #         if idx == 0:
-    #             break
-    #         idx = self.states[idx].predecessor
-    #     tab.reverse()
-    #     u.print_tab_to_file(tab)
-    #     return len(tab)
+    def SolutionSequence(self, grid):
+        tab = []
+        idx = self.last_state_id
+        while True:
+            tab.append(self.states[idx].grid)
+            if idx == str(grid):
+                break
+            idx = str(self.states[idx].predecessor)
+        tab.reverse()
+        u.print_tab_to_file(tab)
+        return len(tab)
 
 
     def algo(self, grid):
@@ -129,7 +172,7 @@ class board:
             # print()
             e_state = self.states[e_hash]
             if e_state.grid == self.target:
-                self.last_state_id = e_state.id ###
+                self.last_state_id = str(e_state.grid)
                 succes = True
             else:
                 opened_set.remove(e_hash)
@@ -195,8 +238,6 @@ class board:
 
 def main():
     args = u.setUpArgs()
-
-    #python npuzzle-gen.py n | python main.py
     if args.puzzle_path is None or args.puzzle_path == "-":
         arg = sys.stdin.read()
         size, grid = u.puzzleParser(arg)
@@ -205,7 +246,6 @@ def main():
             puzzle_data = f.read()
             size, grid = u.puzzleParser(puzzle_data)
 
-
     b = board(size, grid, args.heuristic)
     
     if b.isSolvable:
@@ -213,11 +253,15 @@ def main():
         print(f"h = {b.h}")
         print("Total number of states ever selected in the opened set : ", b.totoalStatesOpened)
         print("Maximum number of states ever represented in memory at the same time during the search : ", len(b.states))
-        # print("Number of moves required to transition from the initial state to the final state : ", b.SolutionSequence())
-        # print("The ordered sequence of states that make up the solution : solution.txt")
+        print("Number of moves required to transition from the initial state to the final state : ", b.SolutionSequence(grid))
+        print("The ordered sequence of states that make up the solution : solution.txt")
     else:
         print("This Puzzle is unsolvable.")
         exit(1)
+
+    # except Exception as error:
+    #     print(f"Error: {error}")
+    #     exit(1)
 
 
 

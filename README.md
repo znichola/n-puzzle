@@ -1,5 +1,7 @@
 # n-puzzle
 
+
+
 ## Profiling
 ```
 # Generate the profiling data
@@ -7,6 +9,10 @@ python npuzzle-gen.py -s 5 | python -m cProfile -o profile.prof main.py
 
 # View the flamegraph
 snakeviz profile.prof
+
+# Testing
+cd test_cases
+ls -1 | xargs -{} python ../main.py {}
 ```
 
 ## TODO
@@ -66,6 +72,8 @@ If succes Then ... Else ... EndIf
 ## Links
 
 - [A Star - Computerphile](https://www.youtube.com/watch?v=ySN5Wnu88nE)
+- [Dijkstra's algorithm](https://en.wikipedia.org/wiki/Dijkstra%27s_algorithm)
 - [Solvable function Logic](https://www.youtube.com/watch?v=bhmCmbj9VAg)
 - [heapq - Python](https://docs.python.org/3/library/heapq.html)
 - [triangle - number](https://oeis.org/A046092)
+- [Linear Algo](https://algorithmsinsight.wordpress.com/graph-theory-2/a-star-in-general/implementing-a-star-to-solve-n-puzzle/)
