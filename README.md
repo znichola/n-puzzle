@@ -9,6 +9,16 @@
 - [ ] resolve the extremly long solve time for an unsolvable
 - [ ] differente heurisitc (manhattan, custom)
 - [ ] Solvable/Unsolvable for 4x4
+- [ ] Solving progress prints
+
+### Imediate TODO
+
+- [ ] fix input parsing (following the rules form the docs)
+- [ ] testing/benchmark python script
+- [ ] heuristic algo correct tiles in place
+- [ ] heuristic algo correct adjacent tiles
+- [ ] what is the bonus about (configure the g(x) and h(x) functions), uniform-cost and greedy searches
+
 
 ## Pseudo-implementation of A*
 
@@ -48,3 +58,4 @@ If succes Then ... Else ... EndIf
 ## Links
 
 - [A Star - Computerphile](https://www.youtube.com/watch?v=ySN5Wnu88nE)
+- [Solvable function Logic](https://www.youtube.com/watch?v=bhmCmbj9VAg)

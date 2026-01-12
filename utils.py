@@ -1,4 +1,5 @@
 import math
+import argparse
 
 def gridToString(grid):
     size = int(math.sqrt(len(grid)))
@@ -47,16 +48,14 @@ def getResult(size):
 
 def print_tab_to_file(tab, filename: str = "solution.txt"):
     with open(filename, "w", encoding="utf-8") as f:
-        for row in tab:
-            f.write(str(row) + "\n")
+        for i, row in enumerate(tab):
+            f.write(f"{i}\n{gridToString(row)}\n\n")
 
 
-def argParser(arg):
+def puzzleParser(arg):
     try:
         args = arg.split()
         size = int(args[5])
-        # if args[4] == "unsolvable":
-        #     raise Exception("This puzzle is unsolvable")
         if math.pow(size, 2) == len(range(6, len(args))):
             grid = [int(n) for n in args[6:]]
         else:
@@ -65,3 +64,21 @@ def argParser(arg):
     except Exception as error:
         print(error)
         exit(1)
+
+
+def setUpArgs():
+    parser = argparse.ArgumentParser(description=("N-puzzle solver\n"))
+    parser.add_argument(
+        "--heuristic",
+        type=str,
+        default="Euclidean",
+        choices=["Euclidean", "Manhattan", "Chebyshev", "Parity"]
+    )
+    parser.add_argument(
+        "puzzle_path",
+        nargs="?",
+        default=None,
+        help="Path to puzzle file (reads from stdin if omitted)",
+        type=str
+    )
+    return parser.parse_args()
