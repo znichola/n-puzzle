@@ -2,18 +2,45 @@ import math
 import argparse
 import sys
 
-def gridToString(grid):
-    size = int(math.sqrt(len(grid)))
-    lines = []
-    max_width = len(str(max(grid)))
-    for i in range(0, len(grid), size):
-        row = grid[i:i + size]
-        lines.append(" ".join(f"{num:>{max_width}}" for num in row))
-    return "\n".join(lines)
+def setUpArgs():
+    parser = argparse.ArgumentParser(description=("N-puzzle solver\n"))
+    parser.add_argument(
+        "--heuristic",
+        type=str,
+        default="Manhattan",
+        # choices=["Euclidean", "Manhattan", "Smart", "Linear", "UniformCost", "ManhattanSnakeCost"]
+    )
+    parser.add_argument(
+        "puzzle_path",
+        nargs="?",
+        default=None,
+        help="Path to puzzle file (reads from stdin if omitted)",
+        type=str
+    )
+    parser.add_argument(
+        "--alt_algo",
+        default=False
+    )
+    return parser.parse_args()
 
 
-def printGrid(grid):
-    print("Grid\n", gridToString(grid), sep='')
+def getPuzzle(args):
+    if args.puzzle_path is None or args.puzzle_path == "-":
+        arg = sys.stdin.read()
+        size, grid = puzzleParser(arg)
+    else:
+        with open(args.puzzle_path) as f:
+            puzzle_data = f.read()
+            size, grid = puzzleParser(puzzle_data)
+
+    if parity(grid, size) % 2 == 0:
+        print("Solvable")
+    else:
+        print("Not Solvable")
+        exit(0)
+
+
+    return size, grid
 
 
 def getResult(size):
@@ -47,13 +74,27 @@ def getResult(size):
     return [x for xs in res for x in xs]
 
 
+def gridToString(grid):
+    size = int(math.sqrt(len(grid)))
+    lines = []
+    max_width = len(str(max(grid)))
+    for i in range(0, len(grid), size):
+        row = grid[i:i + size]
+        lines.append(" ".join(f"{num:>{max_width}}" for num in row))
+    return "\n".join(lines)
+
+
+def printGrid(grid):
+    print("Grid\n", gridToString(grid), sep='')
+
+
 def print_tab_to_file(tab, filename: str = "solution.txt"):
     with open(filename, "w", encoding="utf-8") as f:
         for i, row in enumerate(tab):
             f.write(f"{i}\n{gridToString(row)}\n\n")
 
 
-def puzzleParser(input: str):
+def puzzleParser(input: str) -> tuple[int, list[int]]:
     print(input)
     lines = input.split('\n')
     size = None
@@ -74,49 +115,20 @@ def puzzleParser(input: str):
     if len([1 for a, e in zip(g2, list(range(0, len(grid)))) if a != e]) != 0:
         print(f"{grid=} {g2=}")
         raise Exception("Input must be only consecutive numbers")
+    if size == None:
+        raise Exception("Size cannot be none!")
     return size, grid
 
 
-def setUpArgs():
-    parser = argparse.ArgumentParser(description=("N-puzzle solver\n"))
-    parser.add_argument(
-        "--heuristic",
-        type=str,
-        default="Euclidean",
-        # choices=["Euclidean", "Manhattan", "Smart", "Linear", "UniformCost", "ManhattanSnakeCost"]
-    )
-    parser.add_argument(
-        "puzzle_path",
-        nargs="?",
-        default=None,
-        help="Path to puzzle file (reads from stdin if omitted)",
-        type=str
-    )
-    parser.add_argument(
-        "--alt_algo",
-        default=False
-    )
-    return parser.parse_args()
-
-def parity(grid):
+def parity(grid, size):
     grid_size = len(grid)
     parity = 0
     tmp = [0] * grid_size
 
-    for i in self.target:
-        tmp[i - 1] = grid[self.target.index(i)]
+    target = getResult(size)
+    for i in target:
+        tmp[i - 1] = grid[target.index(i)]
 
     for i, val in enumerate(tmp):
         parity += len(list(filter(lambda v: v < val and v != 0, tmp[i:])))
     return parity
-
-
-def getPuzzle(args):
-    if args.puzzle_path is None or args.puzzle_path == "-":
-        arg = sys.stdin.read()
-        size, grid = puzzleParser(arg)
-    else:
-        with open(args.puzzle_path) as f:
-            puzzle_data = f.read()
-            size, grid = puzzleParser(puzzle_data)
-    return size, grid
