@@ -15,7 +15,8 @@ class Board:
         self.heuristic = Heuristic(size, heuristic)
 
 
-    def a_star(self, grid: tuple):
+    # graph-search version of A* : see wiki article on A*
+    def a_star_wiki(self, grid: tuple):
         opened_set = set([grid])
         opened_heap = [] ; heapq.heapify(opened_heap) ; heapq.heappush(opened_heap, (0.0, grid))
         cameFrom = {} ; cameFrom[grid] = "start"
@@ -25,8 +26,14 @@ class Board:
         totalOpened = 1
 
         while len(opened_heap):
-            f, current = heapq.heappop(opened_heap) ; opened_set.remove(current)
-            print(f"fScore {f}")
+            f, current = heapq.heappop(opened_heap)
+            if current not in opened_set:
+                continue
+            opened_set.remove(current)
+
+            if totalOpened % 1000 == 0:
+                print(f"\r\033[FScore: {f}", flush=True)
+
             if current == self.target:
                 return self.reconstruct_path(cameFrom, current, totalOpened, fScore)
 
@@ -38,9 +45,9 @@ class Board:
                     cameFrom[neighbour] = current
                     gScore[neighbour] = tentative_gScore
                     fScore[neighbour] = tentative_gScore + self.heuristic.h(neighbour)
+                    heapq.heappush(opened_heap, (fScore[neighbour], neighbour))
                     if neighbour not in opened_set:
-                        opened_set.add(neighbour) 
-                        heapq.heappush(opened_heap, (fScore[neighbour], neighbour))
+                        opened_set.add(neighbour)
                         totalOpened += 1
         return None
 
@@ -81,14 +88,14 @@ def main():
 
     Puzzle = Board(size)
 
-    result = Puzzle.a_star(tuple(grid))
+    result = Puzzle.a_star_wiki(tuple(grid))
     if result:
         print("This Puzzle is solvable.")
         print("Complexity in time : total opened states", result["TotalOpened"])
         print("Complexity in size : num states in memory", result["TotalState"])
         print("Number of moves : ", result["LenSequence"])
+        u.print_tab_to_file(result["Sequence"])
         print("The ordered sequence : solution.txt")
-        print(result["Sequence"])
     else:
         print("This Puzzle is unsolvable.")
         exit(1)

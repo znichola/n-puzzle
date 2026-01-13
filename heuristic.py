@@ -14,9 +14,17 @@ class Heuristic:
             "UniformCost": self.uniformCost,
             }
         self.idx_to_xy = [(i // size, i % size) for i in range(size * size)]
-        self.h = tab[heuristic]
+        self._h = tab[heuristic]
         self.target = u.getResult(size)
         self.size = size
+        self.cache = {}
+
+    def h(self, grid: tuple):
+        r = self.cache.get(grid)
+        if r is None:
+            r = self._h(grid)
+            self.cache[grid] = r
+        return r
 
     def manhattan(self, grid: tuple):
         return sum(list(self.manahattanDistance(a, b) for a, b in self.tilesOutOfPlace(grid)))
