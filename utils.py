@@ -82,7 +82,7 @@ def setUpArgs():
         "--heuristic",
         type=str,
         default="Euclidean",
-        choices=["Euclidean", "Manhattan", "Smart", "Linear"]
+        choices=["Euclidean", "Manhattan", "Smart", "Linear", "UniformCost", "ManhattanSnakeCost"]
     )
     parser.add_argument(
         "puzzle_path",
@@ -90,5 +90,9 @@ def setUpArgs():
         default=None,
         help="Path to puzzle file (reads from stdin if omitted)",
         type=str
+    )
+    parser.add_argument(
+        "--alt_algo",
+        default=False
     )
     return parser.parse_args()

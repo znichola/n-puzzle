@@ -60,15 +60,15 @@ class board:
             ax, ay = self.idx_to_xy[a_idx]
             bx, by = self.idx_to_xy[b_idx]
             return math.sqrt((ax - bx) ** 2 + (ay - by) ** 2)
-        
+
         def manahattanDistance(a_idx: int, b_idx: int):
             ax, ay = self.idx_to_xy[a_idx]
             bx, by = self.idx_to_xy[b_idx]
-            return abs(ax - ay) + abs(bx - by)
+            return abs(ax - bx) + abs(ay - by)
 
         def tilesOutOfPlace(grid: list[int]):
-            return [(i, grid.index(t)) for i, (t, g) in enumerate(zip(self.target, grid)) if t != g ]
-        
+            return [(i, grid.index(t)) for i, (t, g) in enumerate(zip(self.target, grid)) if t != g and t != 0]
+
         def getNeighbours(index):
             return list(filter(
                 lambda v: v >= 0 and v < pow(self.size, 2) and 
@@ -85,48 +85,50 @@ class board:
             max_connections = 2*(self.size-1)*self.size # see A046092 from oeis
             dist = sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
             return dist * (total / max_connections)
-    
-
-        def linear2(grid: list[int]):
-            total = 0
-            for row in range(0, len(grid), self.size):
-                row_grid = grid[row:row + self.size]
-                row_target = self.target[row:row + self.size]
-                for c in list(set(row_grid) & set(row_target)):
-                    if row_grid.index(c) > row_target.index(c):
-                        total += 1 
-            
-            for col in range(self.size):
-                col_grid = grid[col :: self.size]
-                col_target = self.target[col :: self.size]
-                for c in list(set(col_grid) & set(col_target)):
-                    if col_grid.index(c) > col_target.index(c):
-                        total += 1  
-
-            # if total != 0:
-            #     print(f"{total=}")
-            return total
         
+        def manahattan_snake_cost(grid: list[int]):
+            tmp = tilesOutOfPlace(grid)
+            max_tile = self.size ** 2
+            foo = list(manahattanDistance(a, b) * ((((max_tile - grid[a] + 1) /  max_tile)) if grid[a] < (max_tile - 8) else 1) for a, b in tmp)
+            return sum(foo)
 
-        def linear(grid: list[int]):
-            total = 0
-            goal_pos = {v: i for i, v in enumerate(self.target)}
+        def linear(grid):
+            conflict = 0
 
             for row in range(self.size):
-                start = row * self.size
-                end = start + self.size
+                row_tiles = grid[row*self.size:(row+1)*self.size]
+                for i in range(self.size):
+                    for j in range(i+1, self.size):
+                        a, b = row_tiles[i], row_tiles[j]
+                        if a == 0 or b == 0:
+                            continue
 
-                row_tiles = grid[start:end]
+                        goal_a = self.target.index(a)
+                        goal_b = self.target.index(b)
 
-                tiles = [tile for tile in row_tiles if tile != 0 and goal_pos[tile] // self.size == row]
+                        if goal_a // self.size == row and goal_b // self.size == row:
+                            if goal_a > goal_b:
+                                conflict += 2
 
-                for i in range(len(tiles)):
-                    for j in range(i + 1, len(tiles)):
-                        if goal_pos[tiles[i]] > goal_pos[tiles[j]]:
-                            total += 1
-            return total
+            for col in range(self.size):
+                col_tiles = grid[col::self.size]
+                for i in range(self.size):
+                    for j in range(i+1, self.size):
+                        a, b = col_tiles[i], col_tiles[j]
+                        if a == 0 or b == 0:
+                            continue
 
-        
+                        goal_a = self.target.index(a)
+                        goal_b = self.target.index(b)
+
+                        if goal_a % self.size == col and goal_b % self.size == col:
+                            if goal_a > goal_b:
+                                conflict += 2
+
+            return conflict
+
+
+
         if self.h == "Euclidean":
             return sum(list(euclideanDistance(a, b) for a, b in tilesOutOfPlace(grid)))
         elif self.h == "Manhattan":
@@ -134,7 +136,11 @@ class board:
         elif self.h == "Smart":
             return smarts(grid)
         elif self.h == "Linear":
-            return sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid))) + 2 * linear(grid)
+            return sum(list(manahattanDistance(a, b) for a, b in tilesOutOfPlace(grid))) + linear(grid)
+        elif self.h == "UniformCost":
+            return 0
+        elif self.h == "ManhattanSnakeCost":
+            return manahattan_snake_cost(grid)
         return 42
 
     def select_by_heuristic(self, possible_states: set[str]):
@@ -169,7 +175,7 @@ class board:
         while len(opened) != 0 and succes is False:
             h, e_hash = heapq.heappop(opened) # Select state by minimum heuristic
             # print(h, e_hash)
-            # print()
+            # print(h)
             e_state = self.states[e_hash]
             if e_state.grid == self.target:
                 self.last_state_id = str(e_state.grid)
@@ -181,7 +187,7 @@ class board:
                 for s_hash in ee_hash:
                     s_state = self.states[s_hash]
                     if (not s_hash in opened_set) and (not s_hash in closed):
-                        heapq.heappush(opened, (s_state.h, s_hash));  self.totoalStatesOpened += 1
+                        heapq.heappush(opened, (s_state.h, s_hash)); self.totoalStatesOpened += 1
                         opened_set.add(s_hash)
                         s_state.predecessor = e_hash
                         s_state.cost = e_state.cost + C
@@ -193,6 +199,26 @@ class board:
                                 closed.remove(s_hash)
                                 heapq.heappush(opened, (s_state.h, s_hash)); self.totoalStatesOpened += 1
                                 opened_set.add(s_hash)
+
+    def algo2(self, grid):
+        opened =[(0, str(grid))]
+        opened_set = set([str(grid)])
+        self.totoalStatesOpened = 1
+        closed = set()
+        succes = False
+        while len(opened) != 0 and succes is False:
+            h, e_hash = heapq.heappop(opened) # Select state by minimum heuristic
+            # print(h, e_hash)
+            # print(h)
+            if self.states[e_hash].grid == self.target:
+                self.last_state_id = str(self.states[e_hash].grid)
+                succes = True
+            if e_hash in closed:
+                continue
+            ee_hash = self.expand(e_hash)
+            for s_hash in ee_hash:
+                heapq.heappush(opened, (self.states[s_hash].cost + self.states[s_hash].h, s_hash)); self.totoalStatesOpened += 1
+            closed.add(e_hash)
 
 
     def createState(self, grid):
@@ -249,12 +275,15 @@ def main():
     b = board(size, grid, args.heuristic)
     
     if b.isSolvable:
-        b.algo(grid)
+        if args.alt_algo:
+            b.algo2(grid)
+        else:
+            b.algo(grid)
         print(f"h = {b.h}")
         print("Total number of states ever selected in the opened set : ", b.totoalStatesOpened)
         print("Maximum number of states ever represented in memory at the same time during the search : ", len(b.states))
-        print("Number of moves required to transition from the initial state to the final state : ", b.SolutionSequence(grid))
-        print("The ordered sequence of states that make up the solution : solution.txt")
+        # print("Number of moves required to transition from the initial state to the final state : ", b.SolutionSequence(grid))
+        # print("The ordered sequence of states that make up the solution : solution.txt")
     else:
         print("This Puzzle is unsolvable.")
         exit(1)

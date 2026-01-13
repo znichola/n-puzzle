@@ -1,6 +1,5 @@
-# This puzzle is solvable
-4
- 2 12 13 10
- 7  3  9  6
- 1 11 15  5
- 4 14  0  8
+# This is a test
+3
+8 0 4
+1 6 3
+7 2 5
