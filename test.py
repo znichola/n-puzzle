@@ -1,9 +1,9 @@
-from heuristic import Heuristic
 import heapq
 import math
+from collections import defaultdict
 
 import utils as u
-import heuristic as h
+from heuristic import Heuristic
 
 C = 1
 
@@ -19,28 +19,23 @@ class Board:
         opened_set = set([grid])
         opened_heap = [] ; heapq.heapify(opened_heap) ; heapq.heappush(opened_heap, (0.0, grid))
         cameFrom = {} ; cameFrom[grid] = "start"
-        gScore = {} ; gScore[grid] = 0.0 # default value of infinity
+        gScore = defaultdict(lambda: math.inf) ; gScore[grid] = 0.0 # default value of infinity
         fScore = {} ; fScore[grid] = self.heuristic.h(grid)
 
         totalOpened = 1
 
-        print("")
         while len(opened_heap):
             f, current = heapq.heappop(opened_heap) ; opened_set.remove(current)
-            # print(f"\rfScore {f}")
+            print(f"fScore {f}")
             if current == self.target:
                 return self.reconstruct_path(cameFrom, current, totalOpened, fScore)
 
             neighbours = self.expand(current)
             for neighbour in neighbours:
-                gScore[neighbour] = math.inf
+
                 tentative_gScore = gScore[current] + C
-                
                 if tentative_gScore < gScore[neighbour]:
-                    # if cameFrom[neighbour] is None:
                     cameFrom[neighbour] = current
-                    # else:
-                    #     cameFrom[neighbour].append(current)
                     gScore[neighbour] = tentative_gScore
                     fScore[neighbour] = tentative_gScore + self.heuristic.h(neighbour)
                     if neighbour not in opened_set:
@@ -51,18 +46,10 @@ class Board:
 
     def reconstruct_path(self, cameFrom: dict, current, totalOpened, fScore):
         sequence = []
-        while True:
-            # print(current)
+        while current != "start":
             sequence.insert(0, current)
             current = cameFrom[current]
-            if current == "start":
-                break
-            if len(sequence) > 100:
-                print("AAAA")
-            # r = cameFrom.get(current)
-            # if r == None:
-            #     break
-            # current = r
+
 
         return {"isSolvable": True, "TotalOpened": totalOpened, "TotalState": len(fScore), "LenSequence": len(sequence), "Sequence": sequence}
 
