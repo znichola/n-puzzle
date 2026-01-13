@@ -77,3 +77,5 @@ If succes Then ... Else ... EndIf
 - [heapq - Python](https://docs.python.org/3/library/heapq.html)
 - [triangle - number](https://oeis.org/A046092)
 - [Linear Algo](https://algorithmsinsight.wordpress.com/graph-theory-2/a-star-in-general/implementing-a-star-to-solve-n-puzzle/)
+- [Wikipedia A*](https://en.wikipedia.org/wiki/A*_search_algorithm)
+- [Wikipedia IDA](https://en.wikipedia.org/wiki/Iterative_deepening_A*#IDA*_on_Trees:_Slow_Threshold_Growth)

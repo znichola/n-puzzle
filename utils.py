@@ -1,5 +1,6 @@
 import math
 import argparse
+import sys
 
 def gridToString(grid):
     size = int(math.sqrt(len(grid)))
@@ -82,7 +83,7 @@ def setUpArgs():
         "--heuristic",
         type=str,
         default="Euclidean",
-        choices=["Euclidean", "Manhattan", "Smart", "Linear", "UniformCost", "ManhattanSnakeCost"]
+        # choices=["Euclidean", "Manhattan", "Smart", "Linear", "UniformCost", "ManhattanSnakeCost"]
     )
     parser.add_argument(
         "puzzle_path",
@@ -96,3 +97,26 @@ def setUpArgs():
         default=False
     )
     return parser.parse_args()
+
+def parity(grid):
+    grid_size = len(grid)
+    parity = 0
+    tmp = [0] * grid_size
+
+    for i in self.target:
+        tmp[i - 1] = grid[self.target.index(i)]
+
+    for i, val in enumerate(tmp):
+        parity += len(list(filter(lambda v: v < val and v != 0, tmp[i:])))
+    return parity
+
+
+def getPuzzle(args):
+    if args.puzzle_path is None or args.puzzle_path == "-":
+        arg = sys.stdin.read()
+        size, grid = puzzleParser(arg)
+    else:
+        with open(args.puzzle_path) as f:
+            puzzle_data = f.read()
+            size, grid = puzzleParser(puzzle_data)
+    return size, grid
