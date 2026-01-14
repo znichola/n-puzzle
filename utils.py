@@ -5,10 +5,10 @@ import sys
 def setUpArgs():
     parser = argparse.ArgumentParser(description=("N-puzzle solver\n"))
     parser.add_argument(
-        "--heuristic",
+        "--h",
         type=str,
         default="Manhattan",
-        # choices=["Euclidean", "Manhattan", "Smart", "Linear", "UniformCost", "ManhattanSnakeCost"]
+        choices=["Euclidean", "Manhattan", "Linear"]
     )
     parser.add_argument(
         "puzzle_path",
@@ -18,14 +18,16 @@ def setUpArgs():
         type=str
     )
     parser.add_argument(
-        "--algo",
+        "--a",
         type=str,
         default="ASWiki",
+        choices=["ASWiki", "ASDocs", "IDA"]
     )
     parser.add_argument(
-        "--f_type",
+        "--f",
         type=str,
         default="Default",
+        choices=["Default", "Greedy", "UniformCost"]
     )
     return parser.parse_args()
 

@@ -1,6 +1,8 @@
 # n-puzzle
 
-
+```
+python puzzle.py test_cases/3x3_0.txt
+```
 
 ## Profiling
 ```
@@ -17,11 +19,16 @@ ls -1 | xargs -{} python ../main.py {}
 
 ## TODO
 
-- [ ] add flags (algo, ...)
-- [ ] 
-- [ ] greedy and uniform search options, IDA* as fast bonus
+- [x] add flags (algo, ...)
+- [x] greedy and uniform search options
 - [x] 3 admissible heuristics
-- [ ] bonus : progress prints, IDA*, giff solve sequence, test arena, 4th heuristic 
+- [ ] bonus : 
+    - [x] progress prints, 
+    - [ ] IDA*,
+    - [x] giff solve sequence,
+    - [ ] test arena,
+    - [ ] alternative A* implem 
+- [ ] error handelling
 - [ ] final checks
 - [ ] handin and corrections
 
