@@ -1,45 +1,59 @@
 import math
-
 import utils as u
-
-idx_to_xy = []
 
 
 class Heuristic:
-    def __init__(self, size, heuristic="Manhattan") -> None:
-        tab = {
-            "Euclidean": self.euclidean, 
-            "Manhattan": self.manhattan,
-            "Linear": self.linear,
-            "UniformCost": self.uniformCost,
-            }
-        self.idx_to_xy = [(i // size, i % size) for i in range(size * size)]
-        self._h = tab[heuristic]
-        self.target = u.getResult(size)
+    def __init__(self, size, type="Manhattan") -> None:
         self.size = size
+        self.target = u.getResult(size)
+
+        # index -> (row, col)
+        self.idx_to_xy = [(i // size, i % size) for i in range(size * size)]
+
+        # tile -> goal index
+        self.goal_index = {tile: i for i, tile in enumerate(self.target)}
+
+       # tile -> (goal_row, goal_col)
+        self.goal_pos = {
+            tile: self.idx_to_xy[i]
+            for tile, i in self.goal_index.items()
+        }
+
+        self._h = {
+            "Manhattan": self._manhattan,
+            "Euclidean": self._euclidean,
+            "Linear": self._linear,
+        }[type]
+
         self.cache = {}
 
-    def h(self, grid: tuple):
-        r = self.cache.get(grid)
-        if r is None:
-            r = self._h(grid)
-            self.cache[grid] = r
-        return r
+    def h(self, grid: tuple) -> float:
+        if grid not in self.cache:
+            self.cache[grid] = self._h(grid)
+        return self.cache[grid]
 
-    def manhattan(self, grid: tuple):
-        return sum(list(self.manahattanDistance(a, b) for a, b in self.tilesOutOfPlace(grid)))
+    def _manhattan(self, grid: tuple):
+        total = 0
+        for i, g in enumerate(grid):
+            if g == 0:
+                continue
+            x, y = self.idx_to_xy[i]
+            gx, gy = self.goal_pos[g]
+            total += abs(x - gx) + abs(y - gy)
+        return total
+
+    def _euclidean(self, grid: tuple):
+        total = 0
+        for i, g in enumerate(grid):
+            if g == 0:
+                continue
+            x, y = self.idx_to_xy[i]
+            gx, gy = self.goal_pos[g]
+            total += math.sqrt((x - gx) ** 2 + (y - gy) ** 2)
+        return total
     
-    def euclidean(self, grid: tuple):
-        return sum(list(self.euclideanDistance(a, b) for a, b in self.tilesOutOfPlace(grid)))
-    
-    def linear(self, grid):
-        return self.manhattan(grid) + self.linearConflicts(grid)
-
-    def uniformCost(self, grid):
-        return 0
-
-    def tilesOutOfPlace(self, grid: tuple):
-        return [(i, grid.index(t)) for i, (t, g) in enumerate(zip(self.target, grid)) if t != g and t != 0]
+    def _linear(self, grid):
+        return self._manhattan(grid) + self._linearConflicts(grid)
 
 
     def euclideanDistance(self, a_idx: int, b_idx: int):
@@ -52,7 +66,7 @@ class Heuristic:
         bx, by = self.idx_to_xy[b_idx]
         return abs(ax - bx) + abs(ay - by)
 
-    def linearConflicts(self, grid):
+    def _linearConflicts(self, grid):
         conflict = 0
 
         for row in range(self.size):
@@ -63,8 +77,8 @@ class Heuristic:
                     if a == 0 or b == 0:
                         continue
 
-                    goal_a = self.target.index(a)
-                    goal_b = self.target.index(b)
+                    goal_a = self.goal_index[a]
+                    goal_b = self.goal_index[b]
 
                     if goal_a // self.size == row and goal_b // self.size == row:
                         if goal_a > goal_b:
@@ -78,8 +92,8 @@ class Heuristic:
                     if a == 0 or b == 0:
                         continue
 
-                    goal_a = self.target.index(a)
-                    goal_b = self.target.index(b)
+                    goal_a = self.goal_index[a]
+                    goal_b = self.goal_index[b]
 
                     if goal_a % self.size == col and goal_b % self.size == col:
                         if goal_a > goal_b:

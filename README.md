@@ -17,21 +17,13 @@ ls -1 | xargs -{} python ../main.py {}
 
 ## TODO
 
-- [x] stats prints (size of states, opened stated, closes states)
-- [x] return print the subject  demands
-- [ ] test system? file in result out
-- [ ] resolve the extremly long solve time for an unsolvable
-- [ ] differente heurisitc (manhattan, custom)
-- [ ] Solvable/Unsolvable for 4x4
-- [ ] Solving progress prints
-
-### Imediate TODO
-
-- [ ] fix input parsing (following the rules form the docs)
-- [ ] testing/benchmark python script
-- [ ] heuristic algo correct tiles in place
-- [ ] heuristic algo correct adjacent tiles
-- [ ] what is the bonus about (configure the g(x) and h(x) functions), uniform-cost and greedy searches
+- [ ] add flags (algo, ...)
+- [ ] 
+- [ ] greedy and uniform search options, IDA* as fast bonus
+- [x] 3 admissible heuristics
+- [ ] bonus : progress prints, IDA*, giff solve sequence, test arena, 4th heuristic 
+- [ ] final checks
+- [ ] handin and corrections
 
 
 ## Pseudo-implementation of A*

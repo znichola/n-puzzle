@@ -18,8 +18,14 @@ def setUpArgs():
         type=str
     )
     parser.add_argument(
-        "--alt_algo",
-        default=False
+        "--algo",
+        type=str,
+        default="ASWiki",
+    )
+    parser.add_argument(
+        "--f_type",
+        type=str,
+        default="Default",
     )
     return parser.parse_args()
 
@@ -47,12 +53,9 @@ def getPuzzle(args):
             puzzle_data = f.read()
             size, grid = puzzleParser(puzzle_data)
 
-    if parity(grid, size) % 2 == 0:
-        print("Solvable")
-    else:
-        print("Not Solvable")
+    if parity(grid, size) % 2 != 0:
+        print("This puzzle is not solvable.")
         exit(0)
-
 
     return size, grid
 
