@@ -24,6 +24,20 @@ def setUpArgs():
     return parser.parse_args()
 
 
+def parity(grid, size):
+    grid_size = len(grid)
+    parity = 0
+    tmp = [0] * grid_size
+
+    target = getResult(size)
+    for i in target:
+        tmp[i - 1] = grid[target.index(i)]
+
+    for i, val in enumerate(tmp):
+        parity += len(list(filter(lambda v: v < val and v != 0, tmp[i:])))
+    return parity
+
+
 def getPuzzle(args):
     if args.puzzle_path is None or args.puzzle_path == "-":
         arg = sys.stdin.read()
@@ -91,7 +105,7 @@ def printGrid(grid):
 def print_tab_to_file(tab, filename: str = "solution.txt"):
     with open(filename, "w", encoding="utf-8") as f:
         for i, row in enumerate(tab):
-            f.write(f"{i}\n{gridToString(row)}\n\n")
+            f.write(f"{i}\n{gridToString(list(row))}\n\n")
 
 
 def puzzleParser(input: str) -> tuple[int, list[int]]:
@@ -118,17 +132,3 @@ def puzzleParser(input: str) -> tuple[int, list[int]]:
     if size == None:
         raise Exception("Size cannot be none!")
     return size, grid
-
-
-def parity(grid, size):
-    grid_size = len(grid)
-    parity = 0
-    tmp = [0] * grid_size
-
-    target = getResult(size)
-    for i in target:
-        tmp[i - 1] = grid[target.index(i)]
-
-    for i, val in enumerate(tmp):
-        parity += len(list(filter(lambda v: v < val and v != 0, tmp[i:])))
-    return parity
