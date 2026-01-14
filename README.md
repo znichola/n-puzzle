@@ -22,15 +22,18 @@ ls -1 | xargs -{} python ../main.py {}
 - [x] add flags (algo, ...)
 - [x] greedy and uniform search options
 - [x] 3 admissible heuristics
+- [ ] Implement N-Puzzle Generator (subject file) 15min
+- [ ] check prints, size & time complexity 10-30min
 - [ ] bonus : 
     - [x] progress prints, 
-    - [ ] IDA*,
-    - [x] giff solve sequence,
-    - [ ] test arena,
-    - [ ] alternative A* implem 
-- [ ] error handelling
-- [ ] final checks
-- [ ] handin and corrections
+    - [ ] IDA (RECURSIVITY !) 15-30min
+    - [x] animated solve sequence,
+    - [ ] test arena, 10min
+    - [x] alternative heuristic implem (hamming dist, tiles out of place)
+    - [ ] Time handling 10min
+- [ ] error handelling 10 min
+- [ ] final checks 15min
+- [ ] handin and corrections 3days
 
 
 ## Pseudo-implementation of A*

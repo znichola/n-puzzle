@@ -12,7 +12,7 @@ class Puzzle(Algorithm):
         if result:
             print("This Puzzle is solvable.")
             print("Complexity in time : total opened states", result["TotalOpened"])
-            print("Complexity in size : num states in memory", result["TotalState"])
+            print("Complexity in size : num states in memory", result["TotalStateMem"])
             print("Number of moves : ", result["LenSequence"])
             u.print_tab_to_file(result["Sequence"])
             print("The ordered sequence : solution.txt")

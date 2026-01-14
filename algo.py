@@ -101,7 +101,6 @@ class Algorithm(Heuristic, Fscore):
         bound = self.h(grid)
         path = [grid] # current search path, use like a stack
         stats = {"count": 0}
-        stats["max_mem"] = len(path)
         def search(g, bound):
             node: tuple = path[-1]
             f = self.f(g, self.h(node)) ; stats["count"] += 1
@@ -119,7 +118,6 @@ class Algorithm(Heuristic, Fscore):
             for neighbour in neighbours:
                 if neighbour not in path:
                     path.append(neighbour)
-                    stats["max_mem"] = len(path) if stats["max_mem"] < len(path) else stats["max_mem"]
                     t = search(g + C, bound)
                     if t == "FOUND":
                         return "FOUND"
@@ -138,7 +136,7 @@ class Algorithm(Heuristic, Fscore):
                 break
             bound = t
 
-        return self.ret_dict(True if t == "FOUND" else False, stats["count"], stats["max_mem"], len(path), path)
+        return self.ret_dict(True if t == "FOUND" else False, stats["count"], len(path), len(path), path)
 
 
     def progress_print(self, fScore, current):
@@ -178,5 +176,5 @@ class Algorithm(Heuristic, Fscore):
             return self.ret_dict(True, totalOpened, len(fScore), len(sequence), sequence)
 
 
-    def ret_dict(self, isSolvable, totalOpened, totalState, lenSequence, sequence):
-        return {"isSolvable": isSolvable, "TotalOpened": totalOpened, "TotalState": totalState, "LenSequence": lenSequence, "Sequence": sequence}
+    def ret_dict(self, isSolvable, totalOpened, totalStateMem, lenSequence, sequence):
+        return {"isSolvable": isSolvable, "TotalOpened": totalOpened, "TotalStateMem": totalStateMem, "LenSequence": lenSequence, "Sequence": sequence}
