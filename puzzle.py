@@ -4,7 +4,7 @@ import utils as u
 class Puzzle(Algorithm):
 
     def __init__(self, args, size) -> None:
-        Algorithm.__init__(self, size, args.algo, args.heuristic, args.f_type)
+        Algorithm.__init__(self, size, args.a, args.h, args.f)
         
         self.res_sequence = []
 

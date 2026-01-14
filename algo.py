@@ -17,7 +17,7 @@ class Algorithm(Heuristic, Fscore):
         self.solve = {
             "ASWiki": self.a_star_wiki, 
             "ASDocs": self.a_star_docs,
-            "IDA*": self.ida,
+            "IDA": self.ida,
             }[algo]
         self.target = tuple(u.getResult(size))
 
@@ -98,7 +98,44 @@ class Algorithm(Heuristic, Fscore):
 
 
     def ida(self, grid):
-        return
+        fScore = {} ; fScore[grid] = self.h(grid)
+
+        bound = self.h(grid)
+        path = [grid] # current search path, use like a stack
+
+
+        def search(path: list, g, bound):
+            node: tuple = path[-1]
+            fScore[node] = self.f(g, self.h(node))
+            if fScore[node] > bound:
+                return fScore[node]
+            elif node == self.target:
+                return "FOUND"
+            mmin = math.inf
+            neighbours = self.expand(node)
+            for neighbour in neighbours:
+                if neighbour not in path:
+                    path.append(neighbour)
+                    t = search(path, g + C, bound)
+                    if t == "FOUND":
+                        return "FOUND"
+                    elif t < mmin:
+                        mmin = t
+                    path.pop()
+            return mmin
+
+        while True:
+            t = search(path, 0, bound)
+            if t == "FOUND":
+                break
+            if t == math.inf:
+                t = "NOT_FOUND"
+                break
+            bound = t
+
+#     def ret_dict(self, isSolvable, totalOpened, totalState, lenSequence, sequence):
+        return self.ret_dict(True if t == "FOUND" else False, len(fScore), 0, len(path), path)
+
 
     def progress_print(self, fScore, current):
         grid_str = u.gridToString(current)
@@ -128,9 +165,14 @@ class Algorithm(Heuristic, Fscore):
             states.append(tuple(newState))
         return states
 
+
     def reconstruct_path(self, cameFrom: dict, current, totalOpened, fScore):
             sequence = []
             while current != "start":
                 sequence.insert(0, current)
                 current = cameFrom[current]
-            return {"isSolvable": True, "TotalOpened": totalOpened, "TotalState": len(fScore), "LenSequence": len(sequence), "Sequence": sequence}
+            return self.ret_dict(True, totalOpened, len(fScore), len(sequence), sequence)
+
+
+    def ret_dict(self, isSolvable, totalOpened, totalState, lenSequence, sequence):
+        return {"isSolvable": isSolvable, "TotalOpened": totalOpened, "TotalState": totalState, "LenSequence": lenSequence, "Sequence": sequence}
