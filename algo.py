@@ -98,34 +98,39 @@ class Algorithm(Heuristic, Fscore):
 
 
     def ida(self, grid):
-        fScore = {} ; fScore[grid] = self.h(grid)
-
         bound = self.h(grid)
         path = [grid] # current search path, use like a stack
-
-
-        def search(path: list, g, bound):
+        stats = {"count": 0}
+        stats["max_mem"] = len(path)
+        def search(g, bound):
             node: tuple = path[-1]
-            fScore[node] = self.f(g, self.h(node))
-            if fScore[node] > bound:
-                return fScore[node]
+            f = self.f(g, self.h(node)) ; stats["count"] += 1
+            if f > bound:
+                return f
             elif node == self.target:
                 return "FOUND"
             mmin = math.inf
-            neighbours = self.expand(node)
+            if stats["count"] % 1000 == 0:
+                self.progress_print(f, node)
+            neighbours =  sorted(
+                self.expand(node),
+                key=lambda n: self.h(n)
+            )
             for neighbour in neighbours:
                 if neighbour not in path:
                     path.append(neighbour)
-                    t = search(path, g + C, bound)
+                    stats["max_mem"] = len(path) if stats["max_mem"] < len(path) else stats["max_mem"]
+                    t = search(g + C, bound)
                     if t == "FOUND":
                         return "FOUND"
                     elif t < mmin:
                         mmin = t
                     path.pop()
+
             return mmin
 
         while True:
-            t = search(path, 0, bound)
+            t = search(0, bound)
             if t == "FOUND":
                 break
             if t == math.inf:
@@ -133,8 +138,7 @@ class Algorithm(Heuristic, Fscore):
                 break
             bound = t
 
-#     def ret_dict(self, isSolvable, totalOpened, totalState, lenSequence, sequence):
-        return self.ret_dict(True if t == "FOUND" else False, len(fScore), 0, len(path), path)
+        return self.ret_dict(True if t == "FOUND" else False, stats["count"], stats["max_mem"], len(path), path)
 
 
     def progress_print(self, fScore, current):
