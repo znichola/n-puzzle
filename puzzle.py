@@ -23,10 +23,8 @@ class Puzzle(Algorithm):
 
 
 def main():
-
     args = u.setUpArgs()
     size, grid = u.getPuzzle(args)
-    
     puzzle = Puzzle(args, size)
     start = time.perf_counter()
     result = puzzle.solve(tuple(grid))
@@ -35,4 +33,8 @@ def main():
     print(f"Solve time: {end - start:.6f} seconds")
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as error:
+        print(f"Something went wrong... :(\n{error}")
+        exit()

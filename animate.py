@@ -58,23 +58,26 @@ def animate_solution(solution_path, delay):
         time.sleep(delay)
 
 
+def main():
+    parser = argparse.ArgumentParser(description="Animate an N-Puzzle solution")
+    parser.add_argument(
+        "solution_path",
+        nargs="?",
+        default="solution.txt"
+    )
+    parser.add_argument(
+        "--delay",
+        type=float,
+        default=0.1
+    )
+
+    args = parser.parse_args()
+    animate_solution(args.solution_path, args.delay)
+
+
 if __name__ == "__main__":
-
     try:
-        parser = argparse.ArgumentParser(description="Animate an N-Puzzle solution")
-        parser.add_argument(
-            "solution_path",
-            nargs="?",
-            default="solution.txt"
-        )
-        parser.add_argument(
-            "--delay",
-            type=float,
-            default=0.1
-        )
-
-        args = parser.parse_args()
-        animate_solution(args.solution_path, args.delay)
+        main()
     except Exception as error:
-        print("Something went wrong... :(")
+        print(f"Something went wrong... :(\n{error}")
         exit()

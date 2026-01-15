@@ -34,7 +34,7 @@ def setUpArgs():
     parser.add_argument(
         "-r",
         type=int,
-        default=3,
+        default=None,
         choices=list(range(3, 7))
     )
     parser.add_argument(

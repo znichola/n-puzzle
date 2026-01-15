@@ -66,4 +66,8 @@ def main():
     test(args.c, args_list)
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except Exception as error:
+        print(f"Something went wrong... :(\n{error}")
+        exit()

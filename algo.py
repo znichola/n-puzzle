@@ -48,6 +48,7 @@ class Algorithm(Heuristic, Fscore):
             self.progress_print(f, current)
 
             if current == self.target:
+                self.print_grid(f, current)
                 return self.reconstruct_path(cameFrom, current, totalOpened, fScore)
 
             neighbours = self.expand(current)
@@ -82,6 +83,7 @@ class Algorithm(Heuristic, Fscore):
             self.progress_print(f, current)
 
             if current == self.target:
+                self.print_grid(f, current)
                 return self.reconstruct_path(cameFrom, current, totalOpened, fScore)
 
             opened_set.remove(current)
@@ -149,19 +151,24 @@ class Algorithm(Heuristic, Fscore):
                     break
                 bound = t
             
+            self.print_grid(0, path[-1])
             return self.ret_dict(True if t == "FOUND" else False, stats["count"], stats["max_mem"], len(path), path)
         except RecursionError:
             print("\nMAX RECURSION LIMIT \n..reporting stats at exit\n")
+            self.print_grid(math.nan, path[-1])
             return self.ret_dict(False, stats["count"], stats["max_mem"], 0, [])
 
 
     def progress_print(self, fScore, current):
         now = time.perf_counter()
-        if now < self._next_progress_time and current != self.target:
+        if now < self._next_progress_time:
             return
         self._next_progress_time = now + self._progress_period
+        self.print_grid(fScore, current)
+
+    def print_grid(self, fScore, current):
         grid_str = u.gridToString(current)
-        lines = self.size + 2  # grid lines + fScore line
+        lines = self.size + 2
         print(
             f"\033[{lines}F"
             f"\n{grid_str}\n"
