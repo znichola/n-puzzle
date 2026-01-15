@@ -16,7 +16,7 @@ def setUpArgs():
     parser.add_argument(
         "-h",
         type=str,
-        default="Manhattan",
+        default="Linear",
         choices=["Euclidean", "Manhattan", "Linear"]
     )
     parser.add_argument(
@@ -29,13 +29,13 @@ def setUpArgs():
         "-f",
         type=str,
         default="Default",
-        choices=["Default", "Greedy", "UniformCost"],
+        choices=["Default", "Greedy", "UniformCost", "Wacky"],
     )
     parser.add_argument(
         "-r",
         type=int,
         default=None,
-        choices=list(range(3, 7))
+        choices=list(range(3, 8))
     )
     parser.add_argument(
         "-p",
@@ -75,6 +75,9 @@ def getPuzzle(args):
     else:
         arg = sys.stdin.read()
         size, grid = puzzleParser(arg)
+    print(size)
+    print()
+    print(gridToString(grid))
 
     if parity(grid, size) % 2 != 0:
         print("This puzzle is not solvable.")
@@ -124,10 +127,6 @@ def gridToString(grid):
     return "\n".join(lines)
 
 
-def printGrid(grid):
-    print("Grid\n", gridToString(grid), sep='')
-
-
 def print_tab_to_file(tab, filename: str = "solution.txt"):
     with open(filename, "w", encoding="utf-8") as f:
         for i, row in enumerate(tab):
@@ -135,7 +134,6 @@ def print_tab_to_file(tab, filename: str = "solution.txt"):
 
 
 def puzzleParser(input: str) -> tuple[int, list[int]]:
-    print(input)
     lines = input.split('\n')
     size = None
     grid = []

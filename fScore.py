@@ -6,7 +6,7 @@ class Fscore:
             "Default": self._astar,
             "UniformCost": self._uniform,
             "Greedy": self._greedy,
-            # "Wacky": self._wacky,
+            "Wacky": self._wacky,
         }[f_type]
 
     def f(self, g: float, h: float) -> float:
@@ -24,6 +24,6 @@ class Fscore:
     def _greedy(g, h):
         return h
 
-    # @staticmethod
-    # def _wacky(g, h):
-    #     return h + h * 10
+    @staticmethod
+    def _wacky(g, h):
+        return g + h * 42

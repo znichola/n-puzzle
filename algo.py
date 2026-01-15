@@ -154,8 +154,8 @@ class Algorithm(Heuristic, Fscore):
             self.print_grid(0, path[-1])
             return self.ret_dict(True if t == "FOUND" else False, stats["count"], stats["max_mem"], len(path), path)
         except RecursionError:
-            print("\nMAX RECURSION LIMIT \n..reporting stats at exit\n")
             self.print_grid(math.nan, path[-1])
+            print("\nMAX RECURSION LIMIT \n..reporting stats at exit\n")
             return self.ret_dict(False, stats["count"], stats["max_mem"], 0, [])
 
 
@@ -172,7 +172,7 @@ class Algorithm(Heuristic, Fscore):
         print(
             f"\033[{lines}F"
             f"\n{grid_str}\n"
-            f"fScore: {fScore}       ",
+            f"fScore: {fScore}                ",
             flush=True
         )
 
