@@ -1,6 +1,7 @@
 from collections import defaultdict
 import heapq
 import math
+import sys
 import time 
 
 from heuristic import Heuristic
@@ -105,6 +106,7 @@ class Algorithm(Heuristic, Fscore):
 
     def ida(self, grid):
         '''Depth-first version of A* : see wiki article on A*'''
+        
         bound = self.h(grid)
         path = [grid] # current search path, use like a stack
         stats = {"count": 0, "max_mem": 1}
@@ -137,16 +139,20 @@ class Algorithm(Heuristic, Fscore):
 
             return mmin
 
-        while True:
-            t = search(0, bound)
-            if t == "FOUND":
-                break
-            if t == math.inf:
-                t = "NOT_FOUND"
-                break
-            bound = t
-        # isSolvable, totalOpened, totalStateMem, lenSequence, sequence
-        return self.ret_dict(True if t == "FOUND" else False, stats["count"], stats["max_mem"], len(path), path)
+        try:
+            while True:
+                t = search(0, bound)
+                if t == "FOUND":
+                    break
+                if t == math.inf:
+                    t = "NOT_FOUND"
+                    break
+                bound = t
+            
+            return self.ret_dict(True if t == "FOUND" else False, stats["count"], stats["max_mem"], len(path), path)
+        except RecursionError:
+            print("\nMAX RECURSION LIMIT \n..reporting stats at exit\n")
+            return self.ret_dict(False, stats["count"], stats["max_mem"], 0, [])
 
 
     def progress_print(self, fScore, current):

@@ -32,12 +32,6 @@ def setUpArgs():
         choices=["Default", "Greedy", "UniformCost"],
     )
     parser.add_argument(
-        "-r",
-        type=int,
-        default=3,
-        choices=list(range(3, 7))
-    )
-    parser.add_argument(
         "-p",
         action="store_true",
         help="Print progress"
@@ -45,7 +39,10 @@ def setUpArgs():
     return parser.parse_args()
 
 def start_process(file, args):
-    subprocess.run(["python", "puzzle.py", args, file])
+    cmd = ["python", "puzzle.py"]
+    cmd += args
+    cmd.append(file)
+    subprocess.run(cmd)
 
 def test(n, args):
     for i in range(nb_test[n]):
@@ -53,18 +50,14 @@ def test(n, args):
     return
 
 def args_to_list(args):
-    args_list = ""
-
-    if args.c != "all":
-        args_list += ["-c", str(args.c)]
+    args_list = []
 
     args_list += ["-h", args.h]
     args_list += ["-a", args.a]
     args_list += ["-f", args.f]
-    args_list += ["-r", str(args.r)]
 
     if args.p:
-        args_list.append("-p")
+        args_list.append(f"-p")
 
     return args_list
 
