@@ -1,6 +1,8 @@
 # n-puzzle
 
-
+```
+python puzzle.py test_cases/3x3_0.txt
+```
 
 ## Profiling
 ```
@@ -17,21 +19,21 @@ ls -1 | xargs -{} python ../main.py {}
 
 ## TODO
 
-- [x] stats prints (size of states, opened stated, closes states)
-- [x] return print the subject  demands
-- [ ] test system? file in result out
-- [ ] resolve the extremly long solve time for an unsolvable
-- [ ] differente heurisitc (manhattan, custom)
-- [ ] Solvable/Unsolvable for 4x4
-- [ ] Solving progress prints
-
-### Imediate TODO
-
-- [ ] fix input parsing (following the rules form the docs)
-- [ ] testing/benchmark python script
-- [ ] heuristic algo correct tiles in place
-- [ ] heuristic algo correct adjacent tiles
-- [ ] what is the bonus about (configure the g(x) and h(x) functions), uniform-cost and greedy searches
+- [x] add flags (algo, ...)
+- [x] greedy and uniform search options
+- [x] 3 admissible heuristics
+- [ ] Implement N-Puzzle Generator (subject file) 15min
+- [ ] check prints, size & time complexity 10-30min
+- [ ] bonus : 
+    - [x] progress prints, 
+    - [ ] IDA (RECURSIVITY !) 15-30min
+    - [x] animated solve sequence,
+    - [ ] test arena, 10min
+    - [x] alternative heuristic implem (hamming dist, tiles out of place)
+    - [ ] Time handling 10min
+- [ ] error handelling 10 min
+- [ ] final checks 15min
+- [ ] handin and corrections 3days
 
 
 ## Pseudo-implementation of A*
@@ -77,3 +79,5 @@ If succes Then ... Else ... EndIf
 - [heapq - Python](https://docs.python.org/3/library/heapq.html)
 - [triangle - number](https://oeis.org/A046092)
 - [Linear Algo](https://algorithmsinsight.wordpress.com/graph-theory-2/a-star-in-general/implementing-a-star-to-solve-n-puzzle/)
+- [Wikipedia A*](https://en.wikipedia.org/wiki/A*_search_algorithm)
+- [Wikipedia IDA](https://en.wikipedia.org/wiki/Iterative_deepening_A*#IDA*_on_Trees:_Slow_Threshold_Growth)
