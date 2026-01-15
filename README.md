@@ -1,7 +1,12 @@
 # n-puzzle
 
+A n-puzzle (8puzzle, 15puzzle ...) solver, we tried making it fast, but it remains python.
+
 ```
 python puzzle.py test_cases/3x3_0.txt
+
+# our estimation of the quickest solve configuration
+python puzzle.py -p -a ASWiki -f Greedy -h Linear test_cases/7x7_0.txt
 ```
 
 ## Profiling
