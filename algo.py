@@ -157,7 +157,7 @@ class Algorithm(Heuristic, Fscore):
 
     def progress_print(self, fScore, current):
         now = time.perf_counter()
-        if now < self._next_progress_time:
+        if now < self._next_progress_time and current != self.target:
             return
         self._next_progress_time = now + self._progress_period
         grid_str = u.gridToString(current)
@@ -165,7 +165,7 @@ class Algorithm(Heuristic, Fscore):
         print(
             f"\033[{lines}F"
             f"\n{grid_str}\n"
-            f"fScore: {fScore}",
+            f"fScore: {fScore}       ",
             flush=True
         )
 

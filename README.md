@@ -24,12 +24,11 @@ ls -1 | xargs -{} python ../main.py {}
 - [x] 3 admissible heuristics
 - [x] Implement N-Puzzle Generator (subject file) 15min
 - [x] check prints, size & time complexity 10-30min
-- [ ] bonus : 
+- [x] bonus : 
     - [x] progress prints, 
-    - [ ] IDA (RECURSIVITY !) 15-30min
+    - [x] IDA (RECURSIVITY !) 15-30min
     - [x] animated solve sequence,
-    - [ ] test arena, 10min
-    - [x] alternative heuristic implem (hamming dist, tiles out of place)
+    - [x] test arena, 10min
     - [x] Time handling 10min
 - [ ] error handelling 10 min
 - [ ] final checks 15min

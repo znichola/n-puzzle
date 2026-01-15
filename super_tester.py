@@ -9,9 +9,9 @@ def setUpArgs():
     parser = argparse.ArgumentParser(description=("N-puzzle solver\n"), add_help=False)
     parser.add_argument(
         "-c",
-        default="all",
-        type= int or str,
-        choices=[3, 4, 5, 6, 7, "all"]
+        default="3",
+        type= int,
+        choices=[3, 4, 5, 6, 7]
     )
     parser.add_argument(
         "-h",
@@ -47,7 +47,6 @@ def start_process(file, args):
 def test(n, args):
     for i in range(nb_test[n]):
         start_process(f"test_cases/{n}x{n}_{i}.txt", args)
-    return
 
 def args_to_list(args):
     args_list = []
@@ -64,13 +63,7 @@ def args_to_list(args):
 def main():
     args = setUpArgs()
     args_list = args_to_list(args)
-    if args.c == "all":
-        for n in range(3, 7):
-            test(n, args_list)
-    else:
-        test(args.c, args_list)
-    return
-
+    test(args.c, args_list)
 
 if __name__ == "__main__":
     main()
