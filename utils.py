@@ -1,15 +1,11 @@
-import math
 import argparse
+import math
 import sys
 
+from npuzzlegen import make_puzzle
+
 def setUpArgs():
-    parser = argparse.ArgumentParser(description=("N-puzzle solver\n"))
-    parser.add_argument(
-        "--h",
-        type=str,
-        default="Manhattan",
-        choices=["Euclidean", "Manhattan", "Linear"]
-    )
+    parser = argparse.ArgumentParser(description=("N-puzzle solver\n"), add_help=False)
     parser.add_argument(
         "puzzle_path",
         nargs="?",
@@ -18,16 +14,38 @@ def setUpArgs():
         type=str
     )
     parser.add_argument(
-        "--a",
+        "-h",
+        type=str,
+        default="Manhattan",
+        choices=["Euclidean", "Manhattan", "Linear"]
+    )
+    parser.add_argument(
+        "-a",
         type=str,
         default="ASWiki",
         choices=["ASWiki", "ASDocs", "IDA"]
     )
     parser.add_argument(
-        "--f",
+        "-f",
         type=str,
         default="Default",
-        choices=["Default", "Greedy", "UniformCost"]
+        choices=["Default", "Greedy", "UniformCost"],
+    )
+    parser.add_argument(
+        "-r",
+        type=int,
+        default=3,
+        choices=list(range(3, 7))
+    )
+    parser.add_argument(
+        "-p",
+        action="store_true",
+        help="Print progress"
+    )
+    parser.add_argument(
+        "--help",
+        action="help",
+        help="show this help message and exit"
     )
     return parser.parse_args()
 
@@ -47,13 +65,16 @@ def parity(grid, size):
 
 
 def getPuzzle(args):
-    if args.puzzle_path is None or args.puzzle_path == "-":
-        arg = sys.stdin.read()
-        size, grid = puzzleParser(arg)
-    else:
+    if args.puzzle_path:
         with open(args.puzzle_path) as f:
             puzzle_data = f.read()
             size, grid = puzzleParser(puzzle_data)
+    elif args.r:
+        size = args.r
+        grid = make_puzzle(s=size, solvable=True, iterations=10000)
+    else:
+        arg = sys.stdin.read()
+        size, grid = puzzleParser(arg)
 
     if parity(grid, size) % 2 != 0:
         print("This puzzle is not solvable.")

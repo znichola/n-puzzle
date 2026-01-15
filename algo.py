@@ -1,6 +1,7 @@
 from collections import defaultdict
 import heapq
 import math
+import time 
 
 from heuristic import Heuristic
 from fScore import Fscore
@@ -10,7 +11,7 @@ C = 1
 
 class Algorithm(Heuristic, Fscore):
 
-    def __init__(self, size, algo, heuristic, f_type) -> None:
+    def __init__(self, size, algo, heuristic, f_type, print_progress) -> None:
         Heuristic.__init__(self, size, heuristic)
         Fscore.__init__(self, f_type)
         self.size = size
@@ -20,6 +21,12 @@ class Algorithm(Heuristic, Fscore):
             "IDA": self.ida,
             }[algo]
         self.target = tuple(u.getResult(size))
+
+        if print_progress:
+            self._progress_period = 1.0 / 10
+            self._next_progress_time = time.perf_counter()
+        else:
+            self.progress_print = lambda *a, **k: None
 
     def a_star_wiki(self, grid):
         '''graph-search version of A* : see wiki article on A*'''
@@ -37,8 +44,7 @@ class Algorithm(Heuristic, Fscore):
                 continue
             opened_set.remove(current)
 
-            if totalOpened % 1000 == 0:
-                self.progress_print(f, current)
+            self.progress_print(f, current)
 
             if current == self.target:
                 return self.reconstruct_path(cameFrom, current, totalOpened, fScore)
@@ -58,6 +64,7 @@ class Algorithm(Heuristic, Fscore):
         return None
 
     def a_star_docs(self, grid):
+        '''classic version of A* with opened/closed sets : see the subject apendix 1'''
         opened_set = set([grid])
         closed_set = set()
         opened_heap = [] ; heapq.heapify(opened_heap) ; heapq.heappush(opened_heap, (0.0, grid))
@@ -68,11 +75,10 @@ class Algorithm(Heuristic, Fscore):
 
         while len(opened_heap):
             f, current = heapq.heappop(opened_heap)
-            # if current not in opened_set:
-            #     continue
+            if current not in opened_set:
+                continue
 
-            if totalOpened % 1000 == 0:
-                self.progress_print(f, current)
+            self.progress_print(f, current)
 
             if current == self.target:
                 return self.reconstruct_path(cameFrom, current, totalOpened, fScore)
@@ -93,21 +99,24 @@ class Algorithm(Heuristic, Fscore):
                     cameFrom[neighbour] = current
                     if neighbour in closed_set:
                         closed_set.remove(neighbour)
-                        opened_set.add(neighbour)
+                        heapq.heappush(opened_heap, (fScore[neighbour], neighbour)); opened_set.add(neighbour); totalOpened += 1
         return None
 
 
     def ida(self, grid):
+        '''Depth-first version of A* : see wiki article on A*'''
         bound = self.h(grid)
         path = [grid] # current search path, use like a stack
-        stats = {"count": 0}
+        stats = {"count": 0, "max_mem": 1}
         def search(g, bound):
             node: tuple = path[-1]
-            f = self.f(g, self.h(node)) ; stats["count"] += 1
+            f = self.f(g, self.h(node))
+            self.progress_print(f, node)
             if f > bound:
                 return f
             elif node == self.target:
                 return "FOUND"
+            stats["count"] += 1
             mmin = math.inf
             if stats["count"] % 1000 == 0:
                 self.progress_print(f, node)
@@ -118,6 +127,7 @@ class Algorithm(Heuristic, Fscore):
             for neighbour in neighbours:
                 if neighbour not in path:
                     path.append(neighbour)
+                    stats["max_mem"] = max(stats["max_mem"], len(path))
                     t = search(g + C, bound)
                     if t == "FOUND":
                         return "FOUND"
@@ -135,11 +145,15 @@ class Algorithm(Heuristic, Fscore):
                 t = "NOT_FOUND"
                 break
             bound = t
-
-        return self.ret_dict(True if t == "FOUND" else False, stats["count"], len(path), len(path), path)
+        # isSolvable, totalOpened, totalStateMem, lenSequence, sequence
+        return self.ret_dict(True if t == "FOUND" else False, stats["count"], stats["max_mem"], len(path), path)
 
 
     def progress_print(self, fScore, current):
+        now = time.perf_counter()
+        if now < self._next_progress_time:
+            return
+        self._next_progress_time = now + self._progress_period
         grid_str = u.gridToString(current)
         lines = self.size + 2  # grid lines + fScore line
         print(

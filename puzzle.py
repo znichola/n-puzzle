@@ -1,10 +1,11 @@
 from algo import Algorithm
 import utils as u
+import time
 
 class Puzzle(Algorithm):
 
     def __init__(self, args, size) -> None:
-        Algorithm.__init__(self, size, args.a, args.h, args.f)
+        Algorithm.__init__(self, size, args.a, args.h, args.f, args.p)
         
         self.res_sequence = []
 
@@ -25,10 +26,13 @@ def main():
 
     args = u.setUpArgs()
     size, grid = u.getPuzzle(args)
-
-    puzzle = Puzzle(args, size)
-    result = puzzle.solve(tuple(grid))
-    puzzle.print_result(result)
     
+    puzzle = Puzzle(args, size)
+    start = time.perf_counter()
+    result = puzzle.solve(tuple(grid))
+    end = time.perf_counter()
+    puzzle.print_result(result)
+    print(f"Solve time: {end - start:.6f} seconds")
+
 if __name__ == "__main__":
     main()
